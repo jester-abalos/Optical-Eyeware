@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { HashRouter, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
@@ -12,6 +11,7 @@ import WishlistModal from './components/WishlistModal';
 import Admin from './components/Admin';
 import { User, Product } from './types';
 import { useProducts } from './hooks/useProducts';
+import { observeElements } from './src/utils/animations';
 
 const AppContent: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -43,6 +43,10 @@ const AppContent: React.FC = () => {
     
     const savedWishlist = localStorage.getItem('optivision_wishlist');
     if (savedWishlist) setWishlist(new Set(JSON.parse(savedWishlist)));
+    
+    // Initialize safe animations
+    const observer = observeElements();
+    return () => observer?.disconnect();
   }, []);
 
   useEffect(() => {
@@ -150,7 +154,7 @@ const AppContent: React.FC = () => {
                     <div className="order-2 lg:order-1 stagger-item">
                       <div className="bg-white p-2 rounded-[3.5rem] shadow-2xl border border-slate-100 overflow-hidden aspect-video relative group">
                         <iframe 
-                          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3859.9482181744154!2d121.1448!3d14.7431!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3397bb2f9540b03f%3A0x6734125f19005c2e!2sKasiglahan%20Village%201!5e0!3m2!1sen!2sph!4v1709123456789!5m2!1sen!2sph" 
+                          src={`https://www.google.com/maps/embed/v1/place?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&q=Kasiglahan+Village+1+Rodriguez+Rizal&zoom=15&maptype=roadmap`}
                           width="100%" height="100%" style={{ border: 0, filter: 'grayscale(1) contrast(1.2)' }} loading="lazy" 
                           className="group-hover:filter-none transition-all duration-1000"
                         ></iframe>
