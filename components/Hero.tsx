@@ -1,5 +1,6 @@
 
 import React from 'react';
+import heroImage from '/assets/597249834_33435671399364564_2689499441945697335_n.jpg';
 
 interface HeroProps {
   onCtaClick: () => void;
@@ -86,7 +87,7 @@ const Hero: React.FC<HeroProps> = ({ onCtaClick }) => {
           <div className="relative group stagger-item hidden lg:block" style={{ animationDelay: '0.3s' }}>
             <div className="relative z-10 rounded-[4rem] overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,0.12)] border-[12px] border-white animate-float bg-slate-50">
               <img 
-                src="/assets/597249834_33435671399364564_2689499441945697335_n.jpg" 
+                src={heroImage} 
                 alt="Luxury Eyewear" 
                 className="w-full h-auto min-h-[500px] object-cover transition-transform duration-[2s] group-hover:scale-110"
               />
