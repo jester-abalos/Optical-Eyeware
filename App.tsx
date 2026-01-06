@@ -254,7 +254,7 @@ const AppContent: React.FC = () => {
       )}
 
       <WishlistModal products={products} isOpen={isWishlistOpen} onClose={() => setIsWishlistOpen(false)} wishlist={wishlist} onToggleWishlist={toggleWishlist} />
-      <ChatWidget />
+      <ChatWidget user={user} />
       <Footer />
     </div>
   );

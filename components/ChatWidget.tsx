@@ -3,7 +3,11 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useChat } from '../hooks/useChat';
 import { ChatMessage } from '../types';
 
-const ChatWidget: React.FC = () => {
+interface ChatWidgetProps {
+  user?: { name: string; email: string; id: string } | null;
+}
+
+const ChatWidget: React.FC<ChatWidgetProps> = ({ user }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const [userName, setUserName] = useState('');
@@ -22,14 +26,39 @@ const ChatWidget: React.FC = () => {
     sendAdminMessage
   } = useChat();
 
-  // Check if user name is stored
+  // Auto-set user name from authenticated user or fallback to localStorage
   useEffect(() => {
-    const storedName = localStorage.getItem('chat_user_name');
-    if (storedName) {
-      setUserName(storedName);
+    if (user?.name) {
+      // Use authenticated user's name
+      setUserName(user.name);
       setIsNameSet(true);
+      localStorage.setItem('chat_user_name', user.name);
+    } else {
+      // Fallback to localStorage for guest users
+      const storedName = localStorage.getItem('chat_user_name');
+      if (storedName) {
+        setUserName(storedName);
+        setIsNameSet(true);
+      }
     }
-  }, []);
+  }, [user]);
+
+  // Reset chat when user changes
+  useEffect(() => {
+    if (user) {
+      // Clear previous chat history when new user logs in
+      const clearChatHistory = async () => {
+        try {
+          // This will trigger a new session ID in useChat hook
+          const newSessionId = `user_${user.id}_${Date.now()}`;
+          localStorage.setItem('chat_session_id', newSessionId);
+        } catch (error) {
+          console.error('Error resetting chat:', error);
+        }
+      };
+      clearChatHistory();
+    }
+  }, [user?.id]);
 
   useEffect(() => {
     if (scrollRef.current) {
