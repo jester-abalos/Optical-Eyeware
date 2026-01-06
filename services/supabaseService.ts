@@ -32,6 +32,104 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   }
 });
 
+// Google OAuth authentication
+export const signInWithGoogle = async () => {
+  try {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin,
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+        }
+      }
+    });
+
+    if (error) {
+      console.error('Google sign-in error:', error);
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error signing in with Google:', error);
+    throw error;
+  }
+};
+
+// Sign out function
+export const signOut = async () => {
+  try {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error('Sign out error:', error);
+      throw error;
+    }
+  } catch (error) {
+    console.error('Error signing out:', error);
+    throw error;
+  }
+};
+
+// Get current user
+export const getCurrentUser = async () => {
+  try {
+    // First check if there's an active session
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    
+    if (sessionError) {
+      // Expected for unauthenticated users
+      return null;
+    }
+    
+    if (!session) {
+      // No active session
+      return null;
+    }
+    
+    // If we have a session, get the user
+    const { data: { user }, error } = await supabase.auth.getUser();
+    
+    if (error) {
+      // Don't log errors for expected auth scenarios
+      const expectedErrors = [
+        'Auth session missing',
+        'Invalid JWT',
+        'Invalid token'
+      ];
+      
+      const isExpectedError = expectedErrors.some(expectedError => 
+        error.message.includes(expectedError)
+      );
+      
+      if (isExpectedError) {
+        return null;
+      }
+      
+      console.error('Unexpected auth error:', error);
+      return null;
+    }
+    
+    return user;
+  } catch (error) {
+    // Don't log expected auth errors
+    if (error instanceof Error && 
+        (error.message.includes('Auth session missing') || 
+         error.message.includes('Invalid JWT'))) {
+      return null;
+    }
+    
+    console.error('Error getting current user:', error);
+    return null;
+  }
+};
+
+// Listen to auth state changes
+export const onAuthStateChange = (callback: (event: any, session: any) => void) => {
+  return supabase.auth.onAuthStateChange(callback);
+};
+
 export const fetchAllProducts = async (): Promise<Product[]> => {
   try {
     console.log('🔄 Fetching all products from Supabase...');

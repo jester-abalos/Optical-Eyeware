@@ -3,69 +3,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useChat } from '../hooks/useChat';
 import { ChatMessage } from '../types';
 
-// Simple rule-based responses for optical shop
-const getOpticalResponse = (userMessage: string): string => {
-  const message = userMessage.toLowerCase();
-  
-  // Greetings
-  if (message.includes('hello') || message.includes('hi') || message.includes('hey')) {
-    return "Hello! Welcome to MSV Eyeworks. How can I help you find the perfect eyewear today?";
-  }
-  
-  // Product inquiries
-  if (message.includes('frame') || message.includes('glasses') || message.includes('eyeglasses')) {
-    return "We offer a wide range of high-quality frames including designer brands, sports frames, and everyday options. Would you like to see our current collection?";
-  }
-  
-  if (message.includes('sunglass') || message.includes('sun') || message.includes('shade')) {
-    return "Our sunglasses collection includes polarized and UV-protective options from top brands. We have both fashion and performance sunglasses available.";
-  }
-  
-  if (message.includes('contact') || message.includes('lens')) {
-    return "We provide contact lenses from major brands including daily, monthly, and extended wear options. Our optometrists can help you find the perfect fit.";
-  }
-  
-  // Services
-  if (message.includes('appointment') || message.includes('schedule') || message.includes('book')) {
-    return "I can help you schedule an eye exam or fitting appointment. Our optometrists are available Monday through Saturday. Would you like to book a specific time?";
-  }
-  
-  if (message.includes('eye exam') || message.includes('checkup') || message.includes('test')) {
-    return "Our comprehensive eye exams include vision testing, eye health screening, and prescription updates. The exam takes about 30-45 minutes.";
-  }
-  
-  // Pricing and location
-  if (message.includes('price') || message.includes('cost') || message.includes('how much')) {
-    return "Our prices vary by brand and type of eyewear. We have options ranging from budget-friendly to premium designer frames. Would you like information about a specific price range?";
-  }
-  
-  if (message.includes('location') || message.includes('address') || message.includes('where')) {
-    return "MSV Eyeworks is located in Rizal. We're open Monday-Saturday from 9 AM to 5 PM (closed Sundays). Would you like directions or our exact address?";
-  }
-  
-  // Brand inquiries
-  if (message.includes('ray-ban') || message.includes('oakley') || message.includes('gucci')) {
-    return "Yes, we carry designer brands including Ray-Ban, Oakley, Gucci, and many more. All our designer eyewear comes with authenticity guarantee.";
-  }
-  
-  // Help and support
-  if (message.includes('help') || message.includes('assist') || message.includes('support')) {
-    return "I'm here to help! You can ask me about our products, services, appointments, pricing, or any other questions about MSV Eyeworks.";
-  }
-  
-  // Default responses
-  if (message.includes('thank') || message.includes('thanks')) {
-    return "You're welcome! Is there anything else I can help you with today?";
-  }
-  
-  if (message.includes('bye') || message.includes('goodbye')) {
-    return "Thank you for visiting MSV Eyeworks! Feel free to reach out anytime. Have a great day!";
-  }
-  
-  // Fallback response
-  return "Thank you for your message! For specific product inquiries or to schedule an appointment, you can call our store directly or visit us in Rizal. Our staff will be happy to assist you personally.";
-};
-
 const ChatWidget: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [inputValue, setInputValue] = useState('');
@@ -122,38 +59,7 @@ const ChatWidget: React.FC = () => {
       return;
     }
     
-    const userMessage = inputValue;
     setInputValue('');
-
-    // Only send automated response if this is the very first message (no previous messages)
-    if (messages.length === 0) {
-      // Get rule-based response and send as assistant message
-      try {
-        // Add small delay to simulate thinking
-        await new Promise(resolve => setTimeout(resolve, 800));
-        const responseText = getOpticalResponse(userMessage);
-        console.log('🤖 Generated initial response:', responseText);
-        
-        await sendAssistantMessage(responseText);
-        console.log('✅ Initial assistant message sent successfully');
-      } catch (error) {
-        console.error('❌ Failed to send assistant message:', error);
-        // Send fallback message
-        try {
-          await sendAssistantMessage('Thank you for your message! Our team will get back to you soon.');
-        } catch (fallbackError) {
-          console.error('❌ Failed to send fallback message:', fallbackError);
-        }
-      }
-    } else {
-      // For subsequent messages, show waiting message instead of automated response
-      try {
-        await sendAssistantMessage('Thank you for your message! Please wait while our team reviews your request...');
-        console.log('✅ Waiting message sent successfully');
-      } catch (error) {
-        console.error('❌ Failed to send waiting message:', error);
-      }
-    }
   };
 
   return (

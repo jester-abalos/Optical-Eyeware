@@ -164,23 +164,6 @@ const Products: React.FC<ProductsProps> = ({
                   <ProductCard key={product.id} product={product} onClick={() => navigate(`/product/${product.id}`)} isWishlisted={wishlist.has(product.id)} onToggleWishlist={(e) => { e.stopPropagation(); onToggleWishlist(product.id); }} />
                 ))}
               </div>
-            ) : products.length === 0 ? (
-              <div className="text-center py-40 bg-yellow-50 rounded-[4rem] border-4 border-dashed border-yellow-200">
-                <h3 className="text-4xl font-black text-yellow-900 tracking-tighter mb-4">No Products in Database</h3>
-                <p className="text-yellow-700 font-medium mb-4">
-                  Your inventory table appears to be empty.
-                </p>
-                <p className="text-sm text-yellow-600 mb-6">
-                  Please add products to your Supabase inventory table to see them here.
-                </p>
-                <div className="bg-yellow-100 p-4 rounded-2xl text-left max-w-md mx-auto">
-                  <p className="text-xs font-mono text-yellow-800 mb-2">Quick SQL to add products:</p>
-                  <code className="text-xs bg-yellow-200 p-2 rounded block">
-                    INSERT INTO inventory (name, category, stock, price) VALUES<br/>
-                    &nbsp;&nbsp;('Sample Frame', 'Frame', 10, 1500.00);
-                  </code>
-                </div>
-              </div>
             ) : (
               <div className="text-center py-40 bg-white rounded-[4rem] border-4 border-dashed border-slate-100">
                 <h3 className="text-4xl font-black text-slate-900 tracking-tighter mb-4">No Products Found</h3>

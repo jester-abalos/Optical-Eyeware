@@ -50,9 +50,9 @@ const Navbar: React.FC<NavbarProps> = ({
           <div className="flex justify-between h-16 items-center">
             {/* MSV Eyeworks Logo - Now PNG and White BG */}
             <Link to="/" className="flex items-center gap-3 cursor-pointer group">
-              <div className="relative bg-white p-2 rounded-2xl shadow-xl shadow-blue-50 border border-blue-50 group-hover:scale-105 transition-transform duration-500 flex items-center justify-center w-14 h-14 overflow-hidden">
+              <div className="relative bg-white p-2 rounded-full shadow-xl shadow-blue-50 border border-blue-50 group-hover:scale-105 transition-transform duration-500 flex items-center justify-center w-14 h-14 overflow-hidden">
                 <img 
-                  src="https://cdn-icons-png.flaticon.com/512/3017/3017056.png" 
+                  src="/assets/599508280_875966468709600_626380504237681260_n.jpg" 
                   alt="MSV" 
                   className="w-10 h-10 object-contain filter drop-shadow-sm" 
                 />

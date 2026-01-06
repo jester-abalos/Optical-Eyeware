@@ -12,6 +12,7 @@ import Admin from './components/Admin';
 import { User, Product } from './types';
 import { useProducts } from './hooks/useProducts';
 import { observeElements } from './src/utils/animations';
+import { signInWithGoogle, signOut, getCurrentUser, onAuthStateChange } from './services/supabaseService';
 
 const AppContent: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -38,15 +39,59 @@ const AppContent: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const savedUser = localStorage.getItem('optivision_user');
-    if (savedUser) setUser(JSON.parse(savedUser));
+    // Check for existing user session on mount
+    const checkUserSession = async () => {
+      try {
+        const currentUser = await getCurrentUser();
+        if (currentUser) {
+          const user: User = {
+            id: currentUser.id,
+            name: currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0] || 'User',
+            email: currentUser.email || '',
+            avatar: currentUser.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${currentUser.id}`
+          };
+          setUser(user);
+          localStorage.setItem('optivision_user', JSON.stringify(user));
+        } else {
+          // Clear any stored user data if no session exists
+          localStorage.removeItem('optivision_user');
+        }
+      } catch (error) {
+        console.error('Error checking user session:', error);
+        // Clear any inconsistent state
+        localStorage.removeItem('optivision_user');
+      }
+    };
+
+    checkUserSession();
     
     const savedWishlist = localStorage.getItem('optivision_wishlist');
     if (savedWishlist) setWishlist(new Set(JSON.parse(savedWishlist)));
     
     // Initialize safe animations
     const observer = observeElements();
-    return () => observer?.disconnect();
+    
+    // Listen for auth state changes
+    const { data: { subscription } } = onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session?.user) {
+        const user: User = {
+          id: session.user.id,
+          name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'User',
+          email: session.user.email || '',
+          avatar: session.user.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${session.user.id}`
+        };
+        setUser(user);
+        localStorage.setItem('optivision_user', JSON.stringify(user));
+      } else if (event === 'SIGNED_OUT') {
+        setUser(null);
+        localStorage.removeItem('optivision_user');
+      }
+    });
+    
+    return () => {
+      observer?.disconnect();
+      subscription?.unsubscribe();
+    };
   }, []);
 
   useEffect(() => {
@@ -68,20 +113,20 @@ const AppContent: React.FC = () => {
     console.log('Product added:', newProduct);
   };
 
-  const handleLogin = () => {
-    const mockUser: User = {
-      id: 'usr_123',
-      name: 'Admin User',
-      email: 'admin@optivision.ph',
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Admin'
-    };
-    setUser(mockUser);
-    localStorage.setItem('optivision_user', JSON.stringify(mockUser));
+  const handleLogin = async () => {
+    try {
+      await signInWithGoogle();
+    } catch (error) {
+      console.error('Login failed:', error);
+    }
   };
 
-  const handleLogout = () => {
-    setUser(null);
-    localStorage.removeItem('optivision_user');
+  const handleLogout = async () => {
+    try {
+      await signOut();
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
   };
 
   return (
@@ -154,9 +199,10 @@ const AppContent: React.FC = () => {
                     <div className="order-2 lg:order-1 stagger-item">
                       <div className="bg-white p-2 rounded-[3.5rem] shadow-2xl border border-slate-100 overflow-hidden aspect-video relative group">
                         <iframe 
-                          src={`https://www.google.com/maps/embed/v1/place?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&q=Kasiglahan+Village+1+Rodriguez+Rizal&zoom=15&maptype=roadmap`}
+                          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3859.9482181744154!2d121.1448!3d14.7431!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3397bb2f9540b03f%3A0x6734125f19005c2e!2sKasiglahan%20Village%201!5e0!3m2!1sen!2sph!4v1709123456789!5m2!1sen!2sph"
                           width="100%" height="100%" style={{ border: 0, filter: 'grayscale(1) contrast(1.2)' }} loading="lazy" 
                           className="group-hover:filter-none transition-all duration-1000"
+                          allowFullScreen
                         ></iframe>
                       </div>
                     </div>

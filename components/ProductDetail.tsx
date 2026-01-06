@@ -3,6 +3,29 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Product } from '../types';
 
+// Get color hex code for common colors
+const getColorHex = (colorName: string) => {
+  const colors: { [key: string]: string } = {
+    'black': '#000000',
+    'white': '#FFFFFF',
+    'red': '#EF4444',
+    'blue': '#3B82F6',
+    'green': '#10B981',
+    'yellow': '#F59E0B',
+    'brown': '#92400E',
+    'gray': '#6B7280',
+    'grey': '#6B7280',
+    'silver': '#9CA3AF',
+    'gold': '#F59E0B',
+    'pink': '#EC4899',
+    'purple': '#8B5CF6',
+    'orange': '#F97316',
+    'tortoise': '#92400E',
+    'clear': '#E5E7EB'
+  };
+  return colors[colorName?.toLowerCase()] || '#E5E7EB';
+};
+
 interface ProductDetailProps {
   products: Product[];
   wishlist: Set<string>;
@@ -107,23 +130,38 @@ const ProductDetail: React.FC<ProductDetailProps> = ({
             <p className="font-medium text-slate-600">{product.description}</p>
           </div>
 
-          {(product.frameType || product.lensType || product.size) && (
+          {(product.frame_type || product.lens_type || product.size || product.color) && (
             <div className="grid grid-cols-2 gap-6 p-8 bg-slate-50 rounded-[2.5rem] border border-slate-100 shadow-inner">
-              {product.frameType && (
+              {product.frame_type && (
                 <div className="space-y-1">
                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Frame Type</p>
-                  <p className="font-bold text-slate-900 text-lg">{product.frameType}</p>
+                  <p className="font-bold text-slate-900 text-lg">{product.frame_type}</p>
                 </div>
               )}
-              {product.lensType && (
+              {product.lens_type && (
                 <div className="space-y-1">
                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Lens Type</p>
-                  <p className="font-bold text-slate-900 text-lg">{product.lensType}</p>
+                  <p className="font-bold text-slate-900 text-lg">{product.lens_type}</p>
+                </div>
+              )}
+              {product.color && (
+                <div className="space-y-1">
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Color</p>
+                  <div className="flex items-center gap-2">
+                    <div 
+                      className="w-6 h-6 rounded-full border-2 border-gray-300 shadow-sm"
+                      style={{ backgroundColor: getColorHex(product.color) }}
+                      title={product.color}
+                    ></div>
+                    <p className="font-bold text-slate-900 text-lg">
+                      {product.color.charAt(0).toUpperCase() + product.color.slice(1)}
+                    </p>
+                  </div>
                 </div>
               )}
               {product.size && (
-                <div className="col-span-2 space-y-1 pt-4 border-t border-slate-100">
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Dimensions</p>
+                <div className="space-y-1">
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Size</p>
                   <p className="font-bold text-slate-900 text-lg">{product.size}</p>
                 </div>
               )}
