@@ -1,0 +1,7 @@
+{
+  "name": "OptiVision Luxe Catalog",
+  "description": "A premium optical eyewear catalog featuring a modern blue and white professional design, interactive product showcase, and AI-powered vision assistant.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
