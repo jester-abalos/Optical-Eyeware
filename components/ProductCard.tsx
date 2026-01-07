@@ -49,11 +49,22 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick, isWishliste
         <div className="absolute inset-0 bg-blue-900/0 group-hover:bg-blue-900/5 z-10 transition-colors duration-700 pointer-events-none"></div>
         
         <div className="w-full h-full relative flex items-center justify-center bg-slate-50">
-          <img 
-            src={product.image} 
-            alt={product.name}
-            className="max-w-full max-h-full object-contain transition-all duration-[2s] ease-out group-hover:scale-110 group-hover:rotate-1 group-hover:brightness-105"
-          />
+          {product.image ? (
+            <img 
+              src={product.image} 
+              alt={product.name}
+              className="max-w-full max-h-full object-contain transition-all duration-[2s] ease-out group-hover:scale-110 group-hover:rotate-1 group-hover:brightness-105"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <div className="text-slate-400 text-center">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <p className="text-xs">No image</p>
+              </div>
+            </div>
+          )}
         </div>
         
         <button
@@ -68,11 +79,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick, isWishliste
         </button>
         
         <div className="absolute top-6 left-6 flex flex-col gap-2 z-20">
-          {product.brand && (
-            <div className="bg-slate-900/90 backdrop-blur px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] text-white shadow-xl transition-transform duration-500 group-hover:scale-105 group-hover:-translate-y-1">
-              {product.brand}
-            </div>
-          )}
           {isInStock && (
             <div className="bg-emerald-500/90 backdrop-blur px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] text-white shadow-xl flex items-center gap-2">
               <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></div>
@@ -96,7 +102,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick, isWishliste
             <h3 className="font-extrabold text-slate-900 group-hover:text-blue-600 transition-colors text-2xl tracking-tighter leading-tight">{product.name}</h3>
             <p className="text-[10px] text-blue-600 font-black uppercase tracking-[0.3em]">{product.category}</p>
           </div>
-          <span className="font-black text-slate-900 text-2xl tracking-tighter transition-transform duration-500 group-hover:scale-110 group-hover:text-blue-600">₱{product.price.toLocaleString()}</span>
         </div>
         
         <p className="text-slate-400 text-sm mb-8 line-clamp-2 leading-relaxed font-medium transition-colors duration-500 group-hover:text-slate-500">

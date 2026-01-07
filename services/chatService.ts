@@ -45,6 +45,14 @@ export interface ChatSession {
 // Generate or get session ID
 export const getOrCreateSessionId = (): string => {
   let sessionId = localStorage.getItem('chat_session_id');
+  
+  // Clear problematic session IDs that are too long or contain old format
+  if (sessionId && (sessionId.length > 100 || sessionId.includes('_1767'))) {
+    console.log('🧹 Clearing problematic session ID:', sessionId);
+    localStorage.removeItem('chat_session_id');
+    sessionId = null;
+  }
+  
   if (!sessionId) {
     sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     localStorage.setItem('chat_session_id', sessionId);
@@ -56,15 +64,15 @@ export const getOrCreateSessionId = (): string => {
 export const createChatSession = async (sessionId: string, userName?: string, userEmail?: string): Promise<ChatSession> => {
   try {
     // First try to get existing session
-    const { data: existingSession, error: fetchError } = await supabaseChat
+    const { data: existingSessions, error: fetchError } = await supabaseChat
       .from('chat_sessions')
       .select('*')
       .eq('session_id', sessionId)
-      .single();
+      .limit(1);
 
-    if (existingSession) {
-      console.log('✅ Found existing session:', existingSession.session_id);
-      return existingSession;
+    if (existingSessions && existingSessions.length > 0) {
+      console.log('✅ Found existing session:', existingSessions[0].session_id);
+      return existingSessions[0];
     }
 
     // If no existing session, create new one with upsert to handle race conditions
@@ -88,14 +96,14 @@ export const createChatSession = async (sessionId: string, userName?: string, us
       // If it's a duplicate key error, fetch the existing session
       if (error.code === '23505') {
         console.log('📝 Session already exists (race condition handled)');
-        const { data: existingSession } = await supabaseChat
+        const { data: existingSessions } = await supabaseChat
           .from('chat_sessions')
           .select('*')
           .eq('session_id', sessionId)
-          .single();
+          .limit(1);
         
-        if (existingSession) {
-          return existingSession;
+        if (existingSessions && existingSessions.length > 0) {
+          return existingSessions[0];
         }
       }
       console.error('Error creating chat session:', error);

@@ -50,7 +50,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ user }) => {
       const clearChatHistory = async () => {
         try {
           // This will trigger a new session ID in useChat hook
-          const newSessionId = `user_${user.id}_${Date.now()}`;
+          const newSessionId = `user_${user.id}`;
           localStorage.setItem('chat_session_id', newSessionId);
         } catch (error) {
           console.error('Error resetting chat:', error);
